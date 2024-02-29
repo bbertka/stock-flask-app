@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define variables
-DOCKER_IMAGE_NAME="bbertka/stock-flask-app:latest"
+DOCKER_IMAGE_NAME="bbertka/stock-flask-app-arm64:latest"
 DOCKER_FILE="Dockerfile"
 
 # Build Docker image
