@@ -12,7 +12,7 @@ This guide outlines the steps to deploy the Stock Flask App using GitLab CI/CD p
 
 ### 1. Kubernetes (k3s) Configuration
 
-First, apply the k3s configurations to create the necessary roles and service account for the GitLab Runner:
+Apply the k3s configurations to create the necessary roles and service account for the GitLab Runner:
 
 ```bash
 kubectl apply -f k3s/role.yml
@@ -20,20 +20,51 @@ kubectl apply -f k3s/rolebinding.yml
 kubectl apply -f k3s/sa-token-secret.yml
 ```
 
-Refer to the `k3s/README.md` for detailed instructions.
-
 ### 2. GitLab CI/CD Configuration
 
-1. **Set up CI/CD Variables**: In your GitLab project, navigate to **Settings > CI / CD > Variables** and add the following:
-   - `KUBE_URL`: The API endpoint of your k3s cluster.
-   - `KUBE_TOKEN`: The token from `sa-token-secret.yml`.
-   - `KUBE_NAMESPACE`: The namespace where the app will be deployed.
+Set up CI/CD Variables in your GitLab project's **Settings > CI / CD > Variables**:
 
-2. **GitLab CI/CD Pipeline**: The `.gitlab-ci.yml` file defines the pipeline stages for deploying the app. Ensure it includes steps for building the Docker image, pushing it to a registry, and applying the Kubernetes `deployment.yml`.
+- `KUBE_URL`: The API endpoint of your k3s cluster.
+- `KUBE_TOKEN`: The token from `sa-token-secret.yml`.
+- `KUBE_NAMESPACE`: The namespace where the app will be deployed.
 
-2. Change the name of the Docker image as you see fit.
+Ensure the `.gitlab-ci.yml` file includes steps for building the Docker image, pushing it to a registry, and applying the Kubernetes `deployment.yml`.
 
 ### 3. Deployment
 
-Committing changes to the repository or manually triggering the pipeline in GitLab will start the CI/CD process. The pipeline will build the Docker image, push it to a registry, and apply the `deployment.yml` to deploy the app to your Kubernetes cluster.
+Triggering the pipeline in GitLab will start the CI/CD process, deploying the app to your Kubernetes cluster.
+
+## Obtaining the Service IP or Hostname
+
+After deployment, determine how your app is exposed:
+
+```bash
+# For LoadBalancer service
+kubectl get svc -n $KUBE_NAMESPACE -o wide
+
+# For NodePort service
+kubectl get nodes -o wide
+```
+
+Use the external IP or node's IP along with the port to access your app.
+
+## Running the Application
+
+Navigate to the following URL, replacing `EXTERNAL_IP` with the obtained IP address:
+
+```
+http://EXTERNAL_IP/stock-price?symbol=AAPL
+```
+
+### Expected Response
+
+The application will return a JSON response with the current stock price for the queried symbol.
+
+## Troubleshooting
+
+Ensure the Kubernetes service for the Flask app is correctly configured and exposed. For detailed logs, inspect the pod logs within your Kubernetes cluster:
+
+```bash
+kubectl logs <pod-name> -n $KUBE_NAMESPACE
+```
 
