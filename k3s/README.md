@@ -1,6 +1,6 @@
-To set up your K3s cluster for the GitLab pipeline, you will need to follow a series of steps to ensure the cluster is ready for deployments. This guide will take you through preparing your K3s cluster, assuming you have the necessary Kubernetes YAML files (`sa-token-secret.yml`, `role.yml`, `rolebinding.yml`) and that you're starting with a basic K3s installation.
-
 ### Preparing Your K3s Cluster for GitLab CI/CD
+
+To set up your K3s cluster for the GitLab pipeline, you will need to follow a series of steps to ensure the cluster is ready for deployments. This guide will take you through preparing your K3s cluster, assuming you have the necessary Kubernetes YAML files (`sa-token-secret.yml`, `role.yml`, `rolebinding.yml`) and that you're starting with a basic K3s installation.
 
 #### Step 1: Create the Namespace
 
