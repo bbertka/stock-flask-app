@@ -5,6 +5,8 @@ variables:
   DOCKER_IMAGE_NAME: "index.docker.io/bbertka/stock-flask-app:latest"
   DOCKER_FILE: "Dockerfile"
   DOCKER_REGISTRY: "docker.io"
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_CLI_EXPERIMENTAL: "enabled"
 
 build-docker-image:
   stage: build
