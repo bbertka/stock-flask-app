@@ -1,6 +1,7 @@
 stages:
   - build-default
   - build-arm64
+  - deploy-k3s
 
 variables:
   DOCKER_FILE: "Dockerfile"
@@ -43,5 +44,17 @@ build-arm64:
       -t index.docker.io/bbertka/stock-flask-app-arm64:latest
       -f $DOCKER_FILE
       --push .
+  only:
+    - main
+
+deploy:
+  stage: deploy-k3s
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config set-cluster default-cluster --server=$KUBE_URL --insecure-skip-tls-verify=true
+    - kubectl config set-credentials default-user --token=$KUBE_TOKEN
+    - kubectl config set-context default --cluster=default-cluster --user=default-user --namespace=$KUBE_NAMESPACE
+    - kubectl config use-context default
+    - kubectl apply -f stock-flask-app-deployment.yml
   only:
     - main
