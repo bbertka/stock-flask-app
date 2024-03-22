@@ -1,4 +1,5 @@
 stages:
+  - build
   - deploy
 
 variables:
@@ -7,6 +8,43 @@ variables:
   DOCKER_CLI_EXPERIMENTAL: "enabled"
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
+
+build-amd64:
+  stage: build
+  image: docker:latest
+  services:
+    - name: docker:dind
+      alias: docker
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
+  script:
+    - >
+      docker build
+      -t index.docker.io/bbertka/stock-flask-app:latest
+      -f $DOCKER_FILE .
+    - docker push index.docker.io/bbertka/stock-flask-app:latest
+  only:
+    - main
+
+build-arm64:
+  stage: build
+  image: docker:latest
+  services:
+    - name: docker:dind
+      alias: docker
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes # Register QEMU as a handler for non-native architectures
+    - docker buildx create --use
+  script:
+    - >
+      docker buildx build
+      --platform linux/arm64
+      -t index.docker.io/bbertka/stock-flask-app-arm64:latest
+      -f $DOCKER_FILE
+      --push .
+  only:
+    - main
 
 deploy-k3s:
   stage: deploy
