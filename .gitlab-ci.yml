@@ -49,7 +49,7 @@ build-arm64:
 
 deploy:
   stage: deploy-k3s
-  image: bitnami/kubectl:latest
+  image: alpine/k8s:latest
   script:
     - kubectl config set-cluster default-cluster --server=$KUBE_URL --insecure-skip-tls-verify=true
     - kubectl config set-credentials default-user --token=$KUBE_TOKEN
