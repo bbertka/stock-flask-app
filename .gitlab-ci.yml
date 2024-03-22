@@ -8,6 +8,8 @@ variables:
   DOCKER_CLI_EXPERIMENTAL: "enabled"
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_IMAGE_NAME: "bbertka/stock-flask-app"  # Base image name
+  DOCKER_BASE_TAG: "latest"  # Base tag
 
 build-amd64:
   stage: build
@@ -20,9 +22,9 @@ build-amd64:
   script:
     - >
       docker build
-      -t index.docker.io/bbertka/stock-flask-app:latest
+      -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_BASE_TAG
       -f $DOCKER_FILE .
-    - docker push index.docker.io/bbertka/stock-flask-app:latest
+    - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_BASE_TAG
   only:
     - main
 
@@ -34,13 +36,13 @@ build-arm64:
       alias: docker
   before_script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes # Register QEMU as a handler for non-native architectures
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker buildx create --use
   script:
     - >
       docker buildx build
       --platform linux/arm64
-      -t index.docker.io/bbertka/stock-flask-app-arm64:latest
+      -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_BASE_TAG-arm64
       -f $DOCKER_FILE
       --push .
   only:

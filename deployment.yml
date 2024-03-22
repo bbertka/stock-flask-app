@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: stock-flask-app
-        image: bbertka/stock-flask-app-arm64:latest
+        image: bbertka/stock-flask-app:latest-arm64
         imagePullPolicy: Always 
         ports:
         - containerPort: 5000
