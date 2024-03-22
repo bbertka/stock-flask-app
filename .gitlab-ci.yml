@@ -1,5 +1,6 @@
 stages:
   - test-ci
+  - scan
   - build
   - deploy
   - test-cd
@@ -12,6 +13,9 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_IMAGE_NAME: "bbertka/stock-flask-app"  # Base image name
   DOCKER_BASE_TAG: "latest"  # Base tag
+
+include:
+  - template: SAST.gitlab-ci.yml 
 
 local-test:
   stage: test-ci
@@ -31,6 +35,14 @@ local-test:
     - kill $!  # Stop the Flask app.
   only:
     - main
+
+sast:
+  stage: scan
+  variables:
+    SAST_EXCLUDED_PATHS: "k3s/"
+  script:
+    - echo "Custom SAST for Python app"
+  allow_failure: true
 
 build-amd64:
   stage: build
