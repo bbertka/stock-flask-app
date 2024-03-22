@@ -9,7 +9,7 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
-build-amd64:
+build-default:
   stage: build-default
   image: docker:latest
   services:
