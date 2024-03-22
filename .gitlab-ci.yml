@@ -6,6 +6,7 @@ variables:
   DOCKER_FILE: "Dockerfile"
   DOCKER_REGISTRY: "docker.io"
   DOCKER_CLI_EXPERIMENTAL: "enabled"
+  DOCKER_HOST: tcp://docker.home.lab:2375
 
 build-docker-image:
   stage: build
