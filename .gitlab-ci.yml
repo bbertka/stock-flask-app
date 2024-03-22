@@ -1,16 +1,16 @@
 stages:
-  - build
+  - build-default
+  - build-arm64
 
 variables:
-  DOCKER_IMAGE_NAME: "index.docker.io/bbertka/stock-flask-app:latest"
   DOCKER_FILE: "Dockerfile"
   DOCKER_REGISTRY: "docker.io"
   DOCKER_CLI_EXPERIMENTAL: "enabled"
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
 
-build-docker-image:
-  stage: build
+build-amd64:
+  stage: build-default
   image: docker:latest
   services:
     - name: docker:dind
@@ -18,7 +18,30 @@ build-docker-image:
   before_script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
   script:
-    - docker build -t $DOCKER_IMAGE_NAME -f $DOCKER_FILE .
-    - docker push $DOCKER_IMAGE_NAME
+    - >
+      docker build
+      -t index.docker.io/bbertka/stock-flask-app:latest
+      -f $DOCKER_FILE .
+    - docker push index.docker.io/bbertka/stock-flask-app:latest
+  only:
+    - main
+
+build-arm64:
+  stage: build-arm64
+  image: docker:latest
+  services:
+    - name: docker:dind
+      alias: docker
+  before_script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
+    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes # Register QEMU as a handler for non-native architectures
+    - docker buildx create --use
+  script:
+    - >
+      docker buildx build
+      --platform linux/arm64
+      -t index.docker.io/bbertka/stock-flask-app-arm64:latest
+      -f $DOCKER_FILE
+      --push .
   only:
     - main
