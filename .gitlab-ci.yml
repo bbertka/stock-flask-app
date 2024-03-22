@@ -2,7 +2,7 @@ stages:
   - build
 
 variables:
-  DOCKER_IMAGE_NAME: "bbertka/stock-flask-app:latest"
+  DOCKER_IMAGE_NAME: "index.docker.io/bbertka/stock-flask-app:latest"
   DOCKER_FILE: "Dockerfile"
   DOCKER_REGISTRY: "docker.io"
 
