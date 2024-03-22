@@ -5,7 +5,7 @@ variables:
   DOCKER_IMAGE_NAME: "index.docker.io/bbertka/stock-flask-app:latest"
   DOCKER_FILE: "Dockerfile"
   DOCKER_REGISTRY: "docker.io"
-  DOCKER_HOST: "unix:///var/run/docker.sock"
+  DOCKER_HOST: tcp://jumphost.home.lab:2375
   DOCKER_CLI_EXPERIMENTAL: "enabled"
 
 build-docker-image:
