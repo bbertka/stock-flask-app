@@ -6,7 +6,8 @@ variables:
   DOCKER_FILE: "Dockerfile"
   DOCKER_REGISTRY: "docker.io"
   DOCKER_CLI_EXPERIMENTAL: "enabled"
-  DOCKER_HOST: tcp://docker.home.lab:2375
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 
 build-docker-image:
   stage: build
@@ -14,6 +15,12 @@ build-docker-image:
   services:
     - docker:dind
   before_script:
+  - >
+    until docker info; do
+      echo 'Waiting for Docker daemon to start...';
+      sleep 1;
+    done
+
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
   script:
     - docker build -t $DOCKER_IMAGE_NAME -f $DOCKER_FILE .
