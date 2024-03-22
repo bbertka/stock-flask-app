@@ -1,6 +1,4 @@
 stages:
-  - build-default
-  - build-arm64
   - deploy-k3s
 
 variables:
@@ -49,7 +47,8 @@ build-arm64:
 
 deploy:
   stage: deploy-k3s
-  image: alpine/k8s
+  image: alpine/k8s:1.29.2
+
   script:
     - kubectl config set-cluster default-cluster --server=$KUBE_URL --insecure-skip-tls-verify=true
     - kubectl config set-credentials default-user --token=$KUBE_TOKEN
