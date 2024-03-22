@@ -40,8 +40,6 @@ sast:
   stage: scan
   variables:
     SAST_EXCLUDED_PATHS: "k3s/"
-  script:
-    - echo "Custom SAST for Python app"
   allow_failure: true
 
 build-amd64:
