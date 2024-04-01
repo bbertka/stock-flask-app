@@ -5,7 +5,7 @@ metadata:
   labels:
     app: stock-flask-app
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: stock-flask-app
