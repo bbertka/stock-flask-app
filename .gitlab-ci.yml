@@ -18,7 +18,8 @@ deploy-k3s:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
-    - kubectl config get-contexts
+    - kubectl config use-context bbertka/stock-flask-app:k3s
+    - kubectl get pods -n $KUBE_NAMESPACE
   only:
     - main
 
