@@ -39,7 +39,7 @@ local-test:
 sast:
   stage: scan
   variables:
-    SAST_EXCLUDED_PATHS: "k3s/"
+    SAST_EXCLUDED_PATHS: "k3s/, .gitlab/"
   allow_failure: true
 
 build-arm64:
