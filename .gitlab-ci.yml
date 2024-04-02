@@ -16,9 +16,10 @@ deploy-k3s:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
-    - echo $KUBECONFIG
     - kubectl config use-context bbertka/stock-flask-app:k3s
-    - kubectl get pods -n $KUBE_NAMESPACE
+    - kubectl apply -f deployment.yml -n $KUBE_NAMESPACE --certificate-authority=$SSL_CERT_FILE
+    - DEPLOYMENT_NAME=$(grep 'name:' deployment.yml | awk 'NR==1{print $2}')
+    - kubectl rollout restart deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE --certificate-authority=$SSL_CERT_FILE
   only:
     - main
 
