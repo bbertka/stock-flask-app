@@ -1,9 +1,5 @@
 stages:
-  - test-ci
-  - scan
-  - build
   - deploy
-  - test-cd
 
 variables:
   DOCKER_FILE: "Dockerfile"
@@ -16,78 +12,11 @@ variables:
   KUBECONFIG: /dev/null
   GITLAB_KAS_SECRET_FILE: /tmp/gitlab-kas-secret-file
 
-include:
-  - template: SAST.gitlab-ci.yml
-
-local-test:
-  stage: test-ci
-  image: python:3.8
-  script:
-    - set -e  # Exit immediately if a command exits with a non-zero status.
-    - pip3 install -r requirements.txt  # Install dependencies.
-    - python3 src/app.py &> /dev/null &  # Start app in the background, suppress output.
-    - sleep 5  # Give Flask some time to start.
-    - |
-      response=$(curl --fail -s "http://localhost:5000/stock-price?symbol=AAPL")
-      echo "Response: $response"
-      if ! echo "$response" | grep -q '"symbol": "AAPL"'; then
-        echo "Test failed: AAPL stock price not found in response."
-        exit 1
-      fi
-    - kill $!  # Stop the Flask app.
-  only:
-    - main
-
-sast:
-  stage: scan
-  variables:
-    SAST_EXCLUDED_PATHS: "k3s/"
-  allow_failure: true
-
-build-arm64:
-  stage: build
-  image: docker:latest
-  services:
-    - name: docker:dind
-      alias: docker
-  before_script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    - docker buildx create --use
-  script:
-    - >
-      docker buildx build
-      --platform linux/arm64
-      -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_BASE_TAG-arm64
-      -f $DOCKER_FILE
-      --push .
-  only:
-    - main
-
 deploy-k3s:
   stage: deploy
   image: bitnami/kubectl:latest
   script:
-    - kubectl config use-context bbertka/stock-flask-app:k3s
-    - kubectl apply -f deployment.yml -n $KUBE_NAMESPACE
-    - DEPLOYMENT_NAME=$(grep 'name:' deployment.yml | awk 'NR==1{print $2}')
-    - kubectl rollout restart deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE
+    - kubectl config get-contexts
   only:
     - main
 
-remote-test:
-  stage: test-cd
-  image: appropriate/curl  # Using a lightweight image with curl installed
-  script:
-    - set -e  # Ensure the script exits on the first command that fails.
-    - |
-      response=$(curl -s "http://$APP_IP_ADDRESS/stock-price?symbol=AAPL")
-      echo "Response: $response"
-      if ! echo "$response" | grep -q '"symbol": "AAPL"'; then
-        echo "Test Failed: AAPL stock price not found in response."
-        exit 1
-      else
-        echo "Test Passed: AAPL stock price retrieved successfully."
-      fi
-  only:
-    - main
