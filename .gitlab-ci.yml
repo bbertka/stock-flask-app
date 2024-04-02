@@ -13,6 +13,8 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_IMAGE_NAME: "bbertka/stock-flask-app"  # Base image name
   DOCKER_BASE_TAG: "latest"  # Base tag
+  KUBECONFIG: /dev/null
+  GITLAB_KAS_SECRET_FILE: /tmp/gitlab-kas-secret-file
 
 include:
   - template: SAST.gitlab-ci.yml 

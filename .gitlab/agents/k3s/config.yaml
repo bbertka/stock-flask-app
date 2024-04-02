@@ -3,3 +3,5 @@ gitops:
   - id: "bbertka/stock-flask-app"
     paths:
     - glob: '/**/*.{yaml,yml,json}'
+  ci_cd:
+    enabled: true
