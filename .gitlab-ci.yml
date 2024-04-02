@@ -44,23 +44,6 @@ sast:
     SAST_EXCLUDED_PATHS: "k3s/"
   allow_failure: true
 
-build-amd64:
-  stage: build
-  image: docker:latest
-  services:
-    - name: docker:dind
-      alias: docker
-  before_script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" $DOCKER_REGISTRY --password-stdin
-  script:
-    - >
-      docker build
-      -t $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_BASE_TAG
-      -f $DOCKER_FILE .
-    - docker push $DOCKER_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_BASE_TAG
-  only:
-    - main
-
 build-arm64:
   stage: build
   image: docker:latest
