@@ -1,0 +1,5 @@
+gitops:
+  manifest_projects:
+  - id: "bbertka/stock-flask-app"
+    paths:
+    - glob: '/**/*.{yaml,yml,json}'
