@@ -15,6 +15,7 @@ variables:
 deploy-k3s:
   stage: deploy
   image: bitnami/kubectl:latest
+  entrypoint: ['']
   script:
     - kubectl config get-contexts
   only:
