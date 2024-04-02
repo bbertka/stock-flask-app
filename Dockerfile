@@ -1,4 +1,4 @@
-~# Use a smaller, more optimized base image for Python
+# Use a smaller, more optimized base image for Python
 FROM python:3.9-slim
 
 # Set the working directory in the container
