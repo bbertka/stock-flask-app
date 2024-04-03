@@ -13,6 +13,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_IMAGE_NAME: "bbertka/stock-flask-app"  # Base image name
   DOCKER_BASE_TAG: "latest"  # Base tag
+  SECURE_LOG_LEVEL: "debug"
 
 include:
   - template: SAST.gitlab-ci.yml
@@ -39,7 +40,7 @@ local-test:
 sast:
   stage: scan
   variables:
-    SAST_EXCLUDED_PATHS: "k3s/, .gitlab/"
+    SAST_EXCLUDED_PATHS: "k3s/"
   allow_failure: true
 
 build-arm64:
