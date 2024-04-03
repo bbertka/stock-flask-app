@@ -69,7 +69,8 @@ deploy-k3s:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
-    - echo "$SSL_CERT_FILE" > kas_ca.crt
+    - echo "$KAS_CA_CERT_CONTENT" > kas_ca.crt
+    - export SSL_CERT_FILE=$PWD/kas_ca.crt
     - kubectl config use-context bbertka/stock-flask-app:k3s
     - kubectl apply -f deployment.yml -n $KUBE_NAMESPACE --certificate-authority=kas_ca.crt
     - DEPLOYMENT_NAME=$(grep 'name:' deployment.yml | awk 'NR==1{print $2}')
